@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dados da Planilha Google</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h1>Dados da Planilha Google</h1>
+    <table id="dadosTabela">
+        <thead>
+            <tr></tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    
+    <script>
+        const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQildvGeXWbsGz9HLXCp0--6xwpoULr4GLWK17s3PWrDYgtINtAolAaN4gYN0hy9G_OLUHXeL9j34bo/pub?output=csv';
+
+        const tabela = document.getElementById('dadosTabela');
+        const thead = tabela.querySelector('thead tr');
+        const tbody = tabela.querySelector('tbody');
+
+        fetch(urlCSV)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar os dados. Verifique se o link está correto e se a planilha foi publicada.');
+                }
+                return response.text();
+            })
+            .then(csvText => {
+                const linhas = csvText.split('\n');
+                
+                const cabecalho = linhas[0].split(',');
+                cabecalho.forEach(coluna => {
+                    const th = document.createElement('th');
+                    th.textContent = coluna.trim();
+                    thead.appendChild(th);
+                });
+
+                for (let i = 1; i < linhas.length; i++) {
+                    const linha = linhas[i];
+                    if (!linha.trim()) continue;
+
+                    const colunas = linha.split(',');
+                    const tr = document.createElement('tr');
+                    
+                    colunas.forEach(coluna => {
+                        const td = document.createElement('td');
+                        td.textContent = coluna.trim();
+                        tr.appendChild(td);
+                    });
+                    
+                    tbody.appendChild(tr);
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao buscar os dados:', error);
+                document.body.innerHTML += '<p>Não foi possível carregar os dados da planilha. Verifique o console para mais detalhes.</p>';
+            });
+    </script>
+
+</body>
+</html>
