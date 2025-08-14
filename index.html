@@ -3,24 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dados da Planilha com Filtro</title>
+    <title>Produtos da Planilha com Filtro</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="tema-claro"> <h1>Produtos da Planilha <i class="fa-solid fa-list-check"></i></h1>
 
-    <h1>Produtos da Planilha</h1>
+    <div id="themeSelector" class="theme-selector">
+        <button class="active" data-theme="tema-claro">Claro</button>
+        <button data-theme="tema-escuro">Escuro</button>
+        <button data-theme="tema-verde-floresta">Verde</button>
+        <button data-theme="tema-rosa-sonho">Rosa</button>
+        <button data-theme="tema-azul-marinho">Marinho</button>
+        <button data-theme="tema-cinza-neutro">Cinza</button>
+        <button data-theme="tema-laranja-quente">Laranja</button>
+        <button data-theme="tema-roxo-elegante">Roxo</button>
+        <button data-theme="tema-preto-e-branco">P&B</button>
+        <button data-theme="tema-cafe-conforto">Café</button>
+        <button data-theme="tema-vermelho-paixao">Vermelho</button>
+        <button data-theme="tema-amarelo-sol">Amarelo</button>
+    </div>
+
     <input type="text" id="searchBar" placeholder="Pesquisar por nome ou descrição...">
     
     <div id="containerCards" class="container-cards">
-        </div>
+    </div>
     
-    <button id="loadMoreBtn" class="load-more-btn">Carregar Mais</button>
+    <button id="loadMoreBtn" class="load-more-btn">
+        <i class="fa-solid fa-plus"></i> Carregar Mais
+    </button>
 
     <div id="itemModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <div id="modalDetails" class="modal-details">
-                </div>
+            </div>
         </div>
     </div>
 

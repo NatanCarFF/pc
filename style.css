@@ -1,29 +1,39 @@
 body {
-    font-family: sans-serif;
+    font-family: 'Poppins', sans-serif; /* Fonte atualizada */
     margin: 20px;
-    background-color: #f4f4f4;
+    background-color: var(--cor-fundo); /* Variável de tema */
+    color: var(--cor-texto); /* Variável de tema */
+    transition: background-color 0.3s, color 0.3s; /* Transição suave */
 }
+
 #searchBar {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     font-size: 16px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cor-borda); /* Variável de tema */
     border-radius: 4px;
+    background-color: var(--cor-card); /* Variável de tema */
+    color: var(--cor-texto);
 }
+#searchBar::placeholder {
+    color: var(--cor-texto-secundario);
+}
+
 .container-cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 20px;
 }
 .card {
-    background-color: #fff;
+    background-color: var(--cor-card); /* Variável de tema */
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     text-align: center;
-    transition: transform 0.2s;
+    transition: transform 0.2s, background-color 0.3s;
     cursor: pointer;
+    color: var(--cor-texto);
 }
 .card:hover {
     transform: translateY(-5px);
@@ -40,28 +50,61 @@ body {
 }
 .card-label {
     font-weight: bold;
-    color: #555;
+    color: var(--cor-texto-secundario); /* Variável de tema */
 }
 .card-value {
-    color: #333;
+    color: var(--cor-texto);
 }
 .hidden {
     display: none;
 }
+
+/* Estilos do seletor de temas */
+.theme-selector {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.theme-selector button {
+    padding: 8px 12px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 20px;
+    cursor: pointer;
+    background-color: var(--cor-card);
+    color: var(--cor-texto-secundario);
+    transition: background-color 0.3s, color 0.3s;
+}
+.theme-selector button.active,
+.theme-selector button:hover {
+    background-color: var(--cor-destaque);
+    color: #fff;
+    border-color: var(--cor-destaque);
+}
+
 /* Estilos para o botão "Carregar Mais" */
 .load-more-btn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 20px auto;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    border: 1px solid #ddd;
+    border: 1px solid var(--cor-borda);
     border-radius: 4px;
-    background-color: #fff;
+    background-color: var(--cor-card);
+    color: var(--cor-texto);
+    transition: background-color 0.3s, color 0.3s;
 }
 .load-more-btn.hidden {
     display: none;
 }
+.load-more-btn i {
+    margin-right: 8px;
+}
+
 /* Estilos para o Modal (pop-up) */
 .modal {
     display: none;
@@ -75,17 +118,18 @@ body {
     background-color: rgba(0,0,0,0.4);
 }
 .modal-content {
-    background-color: #fefefe;
+    background-color: var(--cor-card);
     margin: 15% auto;
     padding: 20px;
-    border: 1px solid #888;
+    border: 1px solid var(--cor-borda);
     width: 80%;
     max-width: 600px;
     border-radius: 8px;
     position: relative;
+    color: var(--cor-texto);
 }
 .close-btn {
-    color: #aaa;
+    color: var(--cor-texto-secundario);
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -93,14 +137,20 @@ body {
 }
 .close-btn:hover,
 .close-btn:focus {
-    color: black;
+    color: var(--cor-destaque);
     text-decoration: none;
 }
 .modal-details h2 {
     text-align: center;
+    color: var(--cor-destaque);
+    font-family: 'Poppins', sans-serif;
 }
 .modal-details p {
     margin: 10px 0;
+    color: var(--cor-texto);
+}
+.modal-details p strong {
+    color: var(--cor-texto-secundario);
 }
 .modal-details img {
     max-width: 100%;
@@ -108,4 +158,123 @@ body {
     display: block;
     margin: 0 auto 20px;
     border-radius: 4px;
+}
+
+/* Variáveis de Tema */
+:root {
+    --cor-fundo: #f4f4f4;
+    --cor-card: #fff;
+    --cor-texto: #333;
+    --cor-texto-secundario: #555;
+    --cor-borda: #ddd;
+    --cor-destaque: #007BFF;
+}
+
+/* Temas */
+.tema-claro {
+    --cor-fundo: #f4f4f4;
+    --cor-card: #fff;
+    --cor-texto: #333;
+    --cor-texto-secundario: #555;
+    --cor-borda: #ddd;
+    --cor-destaque: #007BFF;
+}
+
+.tema-escuro {
+    --cor-fundo: #121212;
+    --cor-card: #1e1e1e;
+    --cor-texto: #e0e0e0;
+    --cor-texto-secundario: #aaa;
+    --cor-borda: #444;
+    --cor-destaque: #bb86fc;
+}
+
+.tema-verde-floresta {
+    --cor-fundo: #e8f5e9;
+    --cor-card: #a5d6a7;
+    --cor-texto: #1b5e20;
+    --cor-texto-secundario: #388e3c;
+    --cor-borda: #c8e6c9;
+    --cor-destaque: #2e7d32;
+}
+
+.tema-rosa-sonho {
+    --cor-fundo: #fce4ec;
+    --cor-card: #f8bbd0;
+    --cor-texto: #4a148c;
+    --cor-texto-secundario: #880e4f;
+    --cor-borda: #f48fb1;
+    --cor-destaque: #d81b60;
+}
+
+.tema-azul-marinho {
+    --cor-fundo: #0d1a2b;
+    --cor-card: #1b2f48;
+    --cor-texto: #e0f2f1;
+    --cor-texto-secundario: #80cbc4;
+    --cor-borda: #263e5e;
+    --cor-destaque: #00bcd4;
+}
+
+.tema-cinza-neutro {
+    --cor-fundo: #e0e0e0;
+    --cor-card: #bdbdbd;
+    --cor-texto: #212121;
+    --cor-texto-secundario: #424242;
+    --cor-borda: #9e9e9e;
+    --cor-destaque: #757575;
+}
+
+.tema-laranja-quente {
+    --cor-fundo: #fff3e0;
+    --cor-card: #ffe0b2;
+    --cor-texto: #e65100;
+    --cor-texto-secundario: #ff9800;
+    --cor-borda: #ffcc80;
+    --cor-destaque: #f57c00;
+}
+
+.tema-roxo-elegante {
+    --cor-fundo: #f3e5f5;
+    --cor-card: #e1bee7;
+    --cor-texto: #4a148c;
+    --cor-texto-secundario: #8e24aa;
+    --cor-borda: #ce93d8;
+    --cor-destaque: #9c27b0;
+}
+
+.tema-preto-e-branco {
+    --cor-fundo: #fff;
+    --cor-card: #000;
+    --cor-texto: #fff;
+    --cor-texto-secundario: #aaa;
+    --cor-borda: #333;
+    --cor-destaque: #fff;
+}
+
+.tema-cafe-conforto {
+    --cor-fundo: #efebe9;
+    --cor-card: #d7ccc8;
+    --cor-texto: #3e2723;
+    --cor-texto-secundario: #5d4037;
+    --cor-borda: #bcaaa4;
+    --cor-destaque: #6d4c41;
+}
+
+.tema-vermelho-paixao {
+    --cor-fundo: #ffebee;
+    --cor-card: #ef9a9a;
+    --cor-texto: #b71c1c;
+    --cor-texto-secundario: #c62828;
+    --cor-borda: #ffcdd2;
+    --cor-destaque: #d32f2f;
+}
+
+.tema-amarelo-sol {
+    --cor-fundo: #fffde7;
+    --cor-card: #fff9c4;
+    --cor-texto: #f57f17;
+    --cor-texto-secundario: #ffb300;
+    --cor-borda: #fff59d;
+    --cor-destaque: #fbc02d;
 }
