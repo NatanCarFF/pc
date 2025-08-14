@@ -1,16 +1,20 @@
+// filter.js
 import { setupPagination } from './pagination.js';
-import { renderCards } from './cardRenderer.js';
 
-export const setupFilter = (data, cardContainer) => {
-    const filterInput = document.getElementById('filterInput');
+export const setupFilter = (allData, cardContainer, loadMoreBtn) => {
+    const searchBar = document.getElementById('searchBar');
 
-    filterInput.addEventListener('keyup', () => {
-        const searchTerm = filterInput.value.toLowerCase();
-        const filteredData = data.filter(item =>
-            item["Nome"].toLowerCase().includes(searchTerm) ||
-            item["Descrição"].toLowerCase().includes(searchTerm)
-        );
+    searchBar.addEventListener('keyup', () => {
+        const searchTerm = searchBar.value.toLowerCase();
         
-        setupPagination(filteredData, cardContainer, renderCards);
+        const filteredData = allData.filter(item => {
+            // Verifica se a chave "Nome" ou "Descrição" existe antes de chamar toLowerCase()
+            const nome = item["Nome"] ? item["Nome"].toLowerCase() : '';
+            const descricao = item["Descrição"] ? item["Descrição"].toLowerCase() : '';
+
+            return nome.includes(searchTerm) || descricao.includes(searchTerm);
+        });
+
+        setupPagination(filteredData, cardContainer, loadMoreBtn);
     });
 };

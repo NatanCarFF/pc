@@ -1,18 +1,25 @@
+// main.js
 import { fetchData } from './dataFetcher.js';
-import { renderCards } from './cardRenderer.js';
-import { setupPagination } from './pagination.js';
 import { setupFilter } from './filter.js';
-import { setupThemeSelector } from './themeSelector.js';
+import { setupPagination } from './pagination.js';
+import { setupThemes } from './themeSelector.js';
 
-const spreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1GfE-B04M2a37XhHhVn4G1BvQ0Tf4t8kFh3kF5q/pub?output=csv";
+const spreadsheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQildvGeXWbsGz9HLXCp0--6xwpoULr4GLWK17s3PWrDYgtINtAolAaN4gYN0hy9G_OLUHXeL9j34bo/pub?output=csv';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const cardContainer = document.getElementById('cardContainer');
+    const containerCards = document.getElementById('containerCards');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    
     const allData = await fetchData(spreadsheetUrl);
 
     if (allData) {
-        setupPagination(allData, cardContainer, renderCards);
-        setupFilter(allData, cardContainer);
-        setupThemeSelector();
+        // Inicializa a paginação com os dados completos
+        setupPagination(allData, containerCards, loadMoreBtn);
+        
+        // Configura o filtro para atuar sobre os dados completos
+        setupFilter(allData, containerCards, loadMoreBtn);
+
+        // Configura o seletor de temas
+        setupThemes();
     }
 });
