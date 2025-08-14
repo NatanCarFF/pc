@@ -1,14 +1,17 @@
 // cardRenderer.js
 
+import { openModal } from './modal.js';
+
 export const renderCards = (data, container) => {
-    container.innerHTML = ''; // Limpa o contêiner
     if (!data) return;
 
     data.forEach(item => {
         const card = document.createElement('div');
         card.classList.add('card');
         
-        // Adiciona a imagem, se houver um link na coluna 'Imagem'
+        // Adiciona um listener para abrir o modal ao clicar no card
+        card.addEventListener('click', () => openModal(item));
+
         if (item.Imagem) {
             const img = document.createElement('img');
             img.src = item.Imagem;
@@ -17,9 +20,8 @@ export const renderCards = (data, container) => {
             card.appendChild(img);
         }
         
-        // Adiciona os outros itens do card
         for (const key in item) {
-            if (key === 'Imagem') continue; // Ignora a imagem para não duplicar
+            if (key === 'Imagem') continue;
             
             const cardItem = document.createElement('div');
             cardItem.classList.add('card-item');
