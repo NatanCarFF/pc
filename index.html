@@ -3,68 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dados da Planilha Google</title>
+    <title>Dados da Planilha em Cards</title>
     <style>
-        body { font-family: sans-serif; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card-item { margin-bottom: 10px; }
+        .card-label { font-weight: bold; color: #555; }
+        .card-value { color: #333; }
     </style>
 </head>
 <body>
 
-    <h1>Dados da Planilha Google</h1>
-    <table id="dadosTabela">
-        <thead>
-            <tr></tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+    <h1>Produtos da Planilha</h1>
+    <div id="containerCards" class="container-cards">
+        </div>
     
     <script>
+        // O mesmo link da sua planilha publicada
         const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQildvGeXWbsGz9HLXCp0--6xwpoULr4GLWK17s3PWrDYgtINtAolAaN4gYN0hy9G_OLUHXeL9j34bo/pub?output=csv';
 
-        const tabela = document.getElementById('dadosTabela');
-        const thead = tabela.querySelector('thead tr');
-        const tbody = tabela.querySelector('tbody');
+        const containerCards = document.getElementById('containerCards');
 
         fetch(urlCSV)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar os dados. Verifique se o link está correto e se a planilha foi publicada.');
-                }
-                return response.text();
-            })
+            .then(response => response.text())
             .then(csvText => {
                 const linhas = csvText.split('\n');
-                
                 const cabecalho = linhas[0].split(',');
-                cabecalho.forEach(coluna => {
-                    const th = document.createElement('th');
-                    th.textContent = coluna.trim();
-                    thead.appendChild(th);
-                });
-
+                
+                // Processa as linhas a partir da segunda (índice 1)
                 for (let i = 1; i < linhas.length; i++) {
                     const linha = linhas[i];
                     if (!linha.trim()) continue;
 
                     const colunas = linha.split(',');
-                    const tr = document.createElement('tr');
+                    const card = document.createElement('div');
+                    card.classList.add('card');
                     
-                    colunas.forEach(coluna => {
-                        const td = document.createElement('td');
-                        td.textContent = coluna.trim();
-                        tr.appendChild(td);
-                    });
+                    // Cria os elementos dentro de cada card
+                    for (let j = 0; j < cabecalho.length; j++) {
+                        const item = document.createElement('div');
+                        item.classList.add('card-item');
+
+                        const label = document.createElement('span');
+                        label.classList.add('card-label');
+                        label.textContent = cabecalho[j].trim() + ': ';
+                        
+                        const value = document.createElement('span');
+                        value.classList.add('card-value');
+                        value.textContent = colunas[j].trim();
+                        
+                        item.appendChild(label);
+                        item.appendChild(value);
+                        card.appendChild(item);
+                    }
                     
-                    tbody.appendChild(tr);
+                    containerCards.appendChild(card);
                 }
             })
             .catch(error => {
                 console.error('Erro ao buscar os dados:', error);
-                document.body.innerHTML += '<p>Não foi possível carregar os dados da planilha. Verifique o console para mais detalhes.</p>';
+                containerCards.innerHTML = '<p>Não foi possível carregar os dados da planilha.</p>';
             });
     </script>
 
