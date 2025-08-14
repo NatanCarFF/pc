@@ -3,97 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dados da Planilha em Cards com Imagens</title>
-    <style>
-        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
-        .container-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-        .card-image {
-            max-width: 100%;
-            height: auto;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-        .card-item { margin-bottom: 10px; text-align: left; }
-        .card-label { font-weight: bold; color: #555; }
-        .card-value { color: #333; }
-    </style>
+    <title>Dados da Planilha com Filtro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <h1>Produtos da Planilha</h1>
+    <input type="text" id="searchBar" placeholder="Pesquisar por nome ou descrição...">
+    
     <div id="containerCards" class="container-cards">
         </div>
-    
-    <script>
-        const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQildvGeXWbsGz9HLXCp0--6xwpoULr4GLWK17s3PWrDYgtINtAolAaN4gYN0hy9G_OLUHXeL9j34bo/pub?output=csv';
 
-        const containerCards = document.getElementById('containerCards');
-
-        fetch(urlCSV)
-            .then(response => response.text())
-            .then(csvText => {
-                const linhas = csvText.split('\n');
-                const cabecalho = linhas[0].split(',');
-                
-                // Encontra o índice da coluna "Imagem"
-                const indiceImagem = cabecalho.findIndex(col => col.trim() === 'Imagem');
-                
-                for (let i = 1; i < linhas.length; i++) {
-                    const linha = linhas[i];
-                    if (!linha.trim()) continue;
-
-                    const colunas = linha.split(',');
-                    const card = document.createElement('div');
-                    card.classList.add('card');
-                    
-                    // Adiciona a imagem se a coluna "Imagem" existir e tiver um link
-                    if (indiceImagem !== -1 && colunas[indiceImagem] && colunas[indiceImagem].trim() !== '') {
-                        const img = document.createElement('img');
-                        img.src = colunas[indiceImagem].trim();
-                        img.classList.add('card-image');
-                        img.alt = 'Imagem do produto'; // Altere para um texto mais descritivo se tiver outra coluna com o nome do produto
-                        card.appendChild(img);
-                    }
-                    
-                    for (let j = 0; j < cabecalho.length; j++) {
-                        // Ignora a coluna de imagem para não criar um item de texto para ela
-                        if (j === indiceImagem) continue;
-
-                        const item = document.createElement('div');
-                        item.classList.add('card-item');
-
-                        const label = document.createElement('span');
-                        label.classList.add('card-label');
-                        label.textContent = cabecalho[j].trim() + ': ';
-                        
-                        const value = document.createElement('span');
-                        value.classList.add('card-value');
-                        value.textContent = colunas[j].trim();
-                        
-                        item.appendChild(label);
-                        item.appendChild(value);
-                        card.appendChild(item);
-                    }
-                    
-                    containerCards.appendChild(card);
-                }
-            })
-            .catch(error => {
-                console.error('Erro ao buscar os dados:', error);
-                containerCards.innerHTML = '<p>Não foi possível carregar os dados da planilha.</p>';
-            });
-    </script>
+    <script src="script.js"></script>
 
 </body>
 </html>
