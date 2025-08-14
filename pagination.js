@@ -1,32 +1,60 @@
-// pagination.js
-
-import { renderCards } from './cardRenderer.js';
-
-const ITEMS_PER_PAGE = 20;
 let currentPage = 0;
-let allData = [];
+const itemsPerPage = 20;
 
-export const setupPagination = (data, container, loadMoreBtn) => {
-    allData = data;
-    loadMoreBtn.addEventListener('click', () => loadMoreItems(container, loadMoreBtn));
-    
-    // Carrega a primeira página automaticamente
-    loadMoreItems(container, loadMoreBtn);
+export const loadMoreItems = (data, container, loadMoreButton) => {
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const newItems = data.slice(startIndex, endIndex);
+
+    renderCards(newItems, container, true);
+
+    currentPage++;
+    if (endIndex >= data.length) {
+        loadMoreButton.style.display = 'none';
+    } else {
+        loadMoreButton.style.display = 'block';
+    }
 };
 
-const loadMoreItems = (container, loadMoreBtn) => {
-    const startIndex = currentPage * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
+export const setupPagination = (data, container, renderCards) => {
+    const loadMoreButton = document.getElementById('loadMoreButton');
     
-    // Pega a fatia de dados para a página atual
-    const itemsToRender = allData.slice(startIndex, endIndex);
-    
-    renderCards(itemsToRender, container);
-    
-    currentPage++;
+    // Passa a função de renderização diretamente
+    const renderNextPage = () => {
+        const startIndex = currentPage * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const newItems = data.slice(startIndex, endIndex);
 
-    // Esconde o botão se todos os itens já foram carregados
-    if (endIndex >= allData.length) {
-        loadMoreBtn.classList.add('hidden');
-    }
+        const fragment = document.createDocumentFragment();
+        newItems.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-content">
+                    <h3 class="card-title">${item["Nome"] || 'N/A'}</h3>
+                    <p class="card-description">${item["Descrição"] || 'Sem descrição'}</p>
+                </div>
+            `;
+            card.addEventListener('click', () => {
+                setupModal(item);
+            });
+            fragment.appendChild(card);
+        });
+
+        container.appendChild(fragment);
+        currentPage++;
+
+        if ((currentPage * itemsPerPage) >= data.length) {
+            loadMoreButton.style.display = 'none';
+        } else {
+            loadMoreButton.style.display = 'block';
+        }
+    };
+
+    loadMoreButton.onclick = renderNextPage;
+    
+    // Renderiza a primeira página
+    currentPage = 0;
+    container.innerHTML = '';
+    renderNextPage();
 };

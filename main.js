@@ -1,25 +1,18 @@
-// main.js
-
 import { fetchData } from './dataFetcher.js';
-import { setupFilter } from './filter.js';
+import { renderCards } from './cardRenderer.js';
 import { setupPagination } from './pagination.js';
-import { setupThemes } from './themeSelector.js';
+import { setupFilter } from './filter.js';
+import { setupThemeSelector } from './themeSelector.js';
+
+const spreadsheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1GfE-B04M2a37XhHhVn4G1BvQ0Tf4t8kFh3kF5q/pub?output=csv";
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const containerCards = document.getElementById('containerCards');
-    const searchBar = document.getElementById('searchBar');
-    const loadMoreBtn = document.getElementById('loadMoreBtn');
-    const themeSelector = document.getElementById('themeSelector');
+    const cardContainer = document.getElementById('cardContainer');
+    const allData = await fetchData(spreadsheetUrl);
 
-    const data = await fetchData();
-    if (data) {
-        // Inicializa a paginação e a renderização dos cards
-        setupPagination(data, containerCards, loadMoreBtn);
-        
-        // Configura o filtro
-        setupFilter(searchBar, containerCards);
-
-        // Configura o seletor de temas
-        setupThemes(themeSelector);
+    if (allData) {
+        setupPagination(allData, cardContainer, renderCards);
+        setupFilter(allData, cardContainer);
+        setupThemeSelector();
     }
 });

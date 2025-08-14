@@ -1,35 +1,32 @@
-// dataFetcher.js
+export const fetchData = async (url) => {
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const errorMessage = document.getElementById('errorMessage');
 
-export const urlCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQildvGeXWbsGz9HLXCp0--6xwpoULr4GLWK17s3PWrDYgtINtAolAaN4gYN0hy9G_OLUHXeL9j34bo/pub?output=csv';
+    loadingSpinner.style.display = 'block';
+    errorMessage.style.display = 'none';
 
-export const fetchData = async () => {
     try {
-        const response = await fetch(urlCSV);
+        const response = await fetch(url);
         if (!response.ok) {
-            throw new Error('Erro ao buscar os dados.');
+            throw new Error(`Erro na rede: ${response.statusText}`);
         }
-        const csvText = await response.text();
-        
-        const linhas = csvText.split('\n');
-        const cabecalho = linhas[0].split(',').map(col => col.trim());
-        const data = [];
-        
-        for (let i = 1; i < linhas.length; i++) {
-            const linha = linhas[i];
-            if (!linha.trim()) continue;
-            
-            const colunas = linha.split(',').map(col => col.trim());
-            const item = {};
-            cabecalho.forEach((col, index) => {
-                item[col] = colunas[index];
-            });
-            data.push(item);
-        }
-        
-        return data;
+        const data = await response.text();
+        const rows = data.split('\n').slice(1);
+        const jsonData = rows.map(row => {
+            const columns = row.split(',');
+            return {
+                "Nome": columns[0],
+                "Descrição": columns[1],
+                "Outra Coisa": columns[2] // Exemplo
+            };
+        });
+        loadingSpinner.style.display = 'none';
+        return jsonData.filter(item => item.Nome); // Filtra linhas vazias
     } catch (error) {
-        console.error('Erro ao buscar os dados:', error);
-        document.getElementById('containerCards').innerHTML = '<p>Não foi possível carregar os dados da planilha.</p>';
+        console.error('Falha ao buscar os dados:', error);
+        loadingSpinner.style.display = 'none';
+        errorMessage.textContent = 'Falha ao carregar os dados. Por favor, tente novamente mais tarde.';
+        errorMessage.style.display = 'block';
         return null;
     }
 };

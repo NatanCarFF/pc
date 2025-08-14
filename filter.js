@@ -1,19 +1,16 @@
-// filter.js
+import { setupPagination } from './pagination.js';
+import { renderCards } from './cardRenderer.js';
 
-export const setupFilter = (searchBar, cardContainer) => {
-    const cards = Array.from(cardContainer.children);
+export const setupFilter = (data, cardContainer) => {
+    const filterInput = document.getElementById('filterInput');
 
-    const filterCards = () => {
-        const searchTerm = searchBar.value.toLowerCase();
-        cards.forEach(card => {
-            const textContent = card.textContent.toLowerCase();
-            if (textContent.includes(searchTerm)) {
-                card.style.display = 'block'; // Ou outro display padrão
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    };
-
-    searchBar.addEventListener('keyup', filterCards);
+    filterInput.addEventListener('keyup', () => {
+        const searchTerm = filterInput.value.toLowerCase();
+        const filteredData = data.filter(item =>
+            item["Nome"].toLowerCase().includes(searchTerm) ||
+            item["Descrição"].toLowerCase().includes(searchTerm)
+        );
+        
+        setupPagination(filteredData, cardContainer, renderCards);
+    });
 };
