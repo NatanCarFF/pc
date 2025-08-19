@@ -16,7 +16,10 @@
         <div id="evento-detalhes" class="item">
             </div>
 
-        <button class="botao-adicionar">Adicionar Atividade</button>
+        <div class="form-adicionar-atividade">
+            <input type="text" id="input-atividade" placeholder="Nova atividade">
+            <button id="btn-adicionar-atividade" class="botao-adicionar">Adicionar Atividade</button>
+        </div>
 
         <a href="#" onclick="history.back();" class="botao-voltar">Voltar para Grupos</a>
     </div>
@@ -32,36 +35,82 @@
             const eventoDetalhesDiv = document.getElementById('evento-detalhes');
             const loadingDiv = document.getElementById('loading');
             const feedbackDiv = document.getElementById('feedback');
+            const inputAtividade = document.getElementById('input-atividade');
+            const btnAdicionarAtividade = document.getElementById('btn-adicionar-atividade');
             
-            tituloPagina.textContent = funcionarioNome;
+            tituloPagina.textContent = `Atividades de ${funcionarioNome}`;
 
+            const renderizarAtividades = (eventos) => {
+                eventoDetalhesDiv.innerHTML = '';
+                if (eventos && eventos.length > 0) {
+                    eventos.forEach(evento => {
+                        const p = document.createElement('p');
+                        p.textContent = evento;
+                        eventoDetalhesDiv.appendChild(p);
+                    });
+                } else {
+                    eventoDetalhesDiv.innerHTML = '<p>Nenhuma atividade encontrada neste grupo.</p>';
+                }
+            };
+            
             if (funcionarioNome && grupoNome && eventosStr) {
                 const eventos = eventosStr.split(',');
-                
-                // Exibe os detalhes do evento selecionado (escolhe o primeiro da lista como exemplo)
-                const evento = eventos[0];
-                
-                // A função que define o valor padrão do evento
-                const obterValorExemplo = (grupo) => {
-                    if (grupo === 'Grupo por Valor (R$)') {
-                        return 'R$ 60,00';
-                    } else if (grupo === 'Grupo por Hora') {
-                        return '60 horas';
-                    } else if (grupo === 'Grupo por Dia') {
-                        return '60 dias';
-                    }
-                    return 'valor não especificado';
-                };
-
-                eventoDetalhesDiv.innerHTML = `
-                    <p class="info-evento"><strong>${evento}</strong>: ${obterValorExemplo(grupoNome)}</p>
-                `;
-                
+                renderizarAtividades(eventos);
+                loadingDiv.style.display = 'none';
             } else {
                 feedbackDiv.textContent = 'Dados insuficientes para exibir a página.';
                 feedbackDiv.style.color = 'red';
                 loadingDiv.style.display = 'none';
             }
+
+            // Função para adicionar uma nova atividade
+            const adicionarAtividade = async () => {
+                const novaAtividade = inputAtividade.value.trim();
+                if (!novaAtividade) {
+                    feedbackDiv.textContent = 'Por favor, insira o nome da atividade.';
+                    feedbackDiv.style.color = 'red';
+                    return;
+                }
+
+                feedbackDiv.textContent = 'Adicionando atividade...';
+                feedbackDiv.style.color = '#ff8c00';
+
+                try {
+                    const response = await fetch('/api/add-atividade', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            empresa: empresaSelecionada,
+                            funcionario: funcionarioNome,
+                            grupo: grupoNome,
+                            novaAtividade: novaAtividade
+                        })
+                    });
+
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || 'Erro ao adicionar a atividade.');
+
+                    feedbackDiv.textContent = 'Atividade adicionada com sucesso!';
+                    feedbackDiv.style.color = 'green';
+                    inputAtividade.value = '';
+                    setTimeout(() => {
+                        window.location.reload(); // Recarrega a página para mostrar a nova atividade
+                    }, 1000);
+
+                } catch (error) {
+                    feedbackDiv.textContent = 'Erro: ' + error.message;
+                    feedbackDiv.style.color = 'red';
+                }
+            };
+            
+            btnAdicionarAtividade.addEventListener('click', adicionarAtividade);
+            inputAtividade.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    adicionarAtividade();
+                }
+            });
         });
     </script>
 </body>
