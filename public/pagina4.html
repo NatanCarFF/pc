@@ -13,10 +13,10 @@
         <div id="loading" class="mensagem">Carregando detalhes...</div>
         <div id="feedback" class="mensagem"></div>
 
-        <div id="evento-detalhes" class="item">
-            </div>
+        <div id="evento-detalhes" class="lista">
+        </div>
 
-        <div class="form-adicionar-atividade">
+        <div class="form-adicionar">
             <input type="text" id="input-atividade" placeholder="Nova atividade">
             <button id="btn-adicionar-atividade" class="botao-adicionar">Adicionar Atividade</button>
         </div>
@@ -27,20 +27,27 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
-            const funcionarioNome = params.get('funcionario');
+            const empresaId = params.get('empresaId');
+            const funcionarioId = params.get('funcionarioId');
             const grupoNome = params.get('grupo');
-            const eventosStr = params.get('eventos');
 
             const tituloPagina = document.getElementById('titulo-pagina');
             const eventoDetalhesDiv = document.getElementById('evento-detalhes');
-            const loadingDiv = document.getElementById('loading');
-            const feedbackDiv = document.getElementById('feedback');
             const inputAtividade = document.getElementById('input-atividade');
             const btnAdicionarAtividade = document.getElementById('btn-adicionar-atividade');
+            const loadingDiv = document.getElementById('loading');
+            const feedbackDiv = document.getElementById('feedback');
             
-            tituloPagina.textContent = `Atividades de ${funcionarioNome}`;
+            let funcionarioData = null;
+            let grupoChave = null;
+            
+            // Define o nome da chave do grupo com base no nome exibido
+            if (grupoNome === 'Grupo por Valor (R$)') grupoChave = 'grupo_valor_r$';
+            else if (grupoNome === 'Grupo por Hora') grupoChave = 'grupo_hora';
+            else if (grupoNome === 'Grupo por Dia') grupoChave = 'grupo_dia';
 
-            const renderizarAtividades = (eventos) => {
+            // Função para renderizar os detalhes do grupo
+            const renderizarDetalhes = (eventos) => {
                 eventoDetalhesDiv.innerHTML = '';
                 if (eventos && eventos.length > 0) {
                     eventos.forEach(evento => {
@@ -49,41 +56,69 @@
                         eventoDetalhesDiv.appendChild(p);
                     });
                 } else {
-                    eventoDetalhesDiv.innerHTML = '<p>Nenhuma atividade encontrada neste grupo.</p>';
+                    eventoDetalhesDiv.innerHTML = '<p>Nenhuma atividade neste grupo.</p>';
+                }
+            };
+
+            // Função para buscar e carregar os dados
+            const carregarDados = async () => {
+                loadingDiv.style.display = 'block';
+                feedbackDiv.textContent = '';
+                
+                if (!funcionarioId || !grupoNome) {
+                    feedbackDiv.textContent = 'Dados insuficientes para exibir a página.';
+                    feedbackDiv.style.color = 'red';
+                    loadingDiv.style.display = 'none';
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/data');
+                    if (!response.ok) throw new Error('Erro ao carregar dados.');
+                    
+                    const dataJson = await response.json();
+                    
+                    const empresa = dataJson.empresas.find(e => e.id === empresaId);
+                    if (empresa) {
+                        funcionarioData = empresa.funcionarios.find(f => f.id === funcionarioId);
+                    }
+                    
+                    if (funcionarioData && funcionarioData[grupoChave]) {
+                        tituloPagina.textContent = `${grupoNome} de ${funcionarioData.nome}`;
+                        renderizarDetalhes(funcionarioData[grupoChave]);
+                    } else {
+                        feedbackDiv.textContent = 'Dados do funcionário ou grupo não encontrados.';
+                        feedbackDiv.style.color = 'red';
+                    }
+
+                } catch (error) {
+                    feedbackDiv.textContent = 'Erro: ' + error.message;
+                    feedbackDiv.style.color = 'red';
+                } finally {
+                    loadingDiv.style.display = 'none';
                 }
             };
             
-            if (funcionarioNome && grupoNome && eventosStr) {
-                const eventos = eventosStr.split(',');
-                renderizarAtividades(eventos);
-                loadingDiv.style.display = 'none';
-            } else {
-                feedbackDiv.textContent = 'Dados insuficientes para exibir a página.';
-                feedbackDiv.style.color = 'red';
-                loadingDiv.style.display = 'none';
-            }
-
             // Função para adicionar uma nova atividade
             const adicionarAtividade = async () => {
                 const novaAtividade = inputAtividade.value.trim();
                 if (!novaAtividade) {
-                    feedbackDiv.textContent = 'Por favor, insira o nome da atividade.';
+                    feedbackDiv.textContent = 'A atividade não pode estar vazia.';
                     feedbackDiv.style.color = 'red';
                     return;
                 }
-
+                
                 feedbackDiv.textContent = 'Adicionando atividade...';
                 feedbackDiv.style.color = '#ff8c00';
 
                 try {
-                    // Fetch para a API que salva a nova atividade no servidor
-                    const response = await fetch('/api/add-atividade', {
+                    const response = await fetch('/api/addAtividade', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            funcionario: funcionarioNome,
+                            funcionarioId: funcionarioId,
                             grupo: grupoNome,
                             novaAtividade: novaAtividade
                         })
@@ -91,14 +126,14 @@
 
                     const result = await response.json();
                     if (!response.ok) throw new Error(result.message || 'Erro ao adicionar a atividade.');
-
+                    
                     feedbackDiv.textContent = 'Atividade adicionada com sucesso!';
                     feedbackDiv.style.color = 'green';
                     inputAtividade.value = '';
-                    setTimeout(() => {
-                        window.location.reload(); // Recarrega a página para mostrar a nova atividade
-                    }, 1000);
-
+                    
+                    // Recarrega os dados para mostrar a nova atividade
+                    await carregarDados();
+                    
                 } catch (error) {
                     feedbackDiv.textContent = 'Erro: ' + error.message;
                     feedbackDiv.style.color = 'red';
@@ -111,6 +146,8 @@
                     adicionarAtividade();
                 }
             });
+
+            carregarDados();
         });
     </script>
 </body>

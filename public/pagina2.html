@@ -11,7 +11,6 @@
         <h1 id="titulo-pagina"></h1>
         
         <div class="ferramentas-func">
-            <button id="btn-salvar" class="botao-adicionar">Salvar Alterações</button>
             <div class="form-adicionar">
                 <input type="text" id="input-funcionario" placeholder="Nome do novo funcionário">
                 <button id="btn-adicionar" class="botao-adicionar">Adicionar</button>
@@ -22,7 +21,7 @@
         <div id="feedback" class="mensagem"></div>
 
         <div id="empregados-lista" class="lista">
-            </div>
+        </div>
 
         <a href="index.html" class="botao-voltar">Voltar para Empresas</a>
     </div>
@@ -30,83 +29,93 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
-            const empresaSelecionada = params.get('empresa');
+            const empresaId = params.get('empresaId');
             
-            const listaDiv = document.getElementById('empregados-lista');
             const tituloPagina = document.getElementById('titulo-pagina');
+            const listaDiv = document.getElementById('empregados-lista');
+            const inputFuncionario = document.getElementById('input-funcionario');
+            const btnAdicionar = document.getElementById('btn-adicionar');
             const loadingDiv = document.getElementById('loading');
             const feedbackDiv = document.getElementById('feedback');
-            const btnAdicionar = document.getElementById('btn-adicionar');
-            const inputFuncionario = document.getElementById('input-funcionario');
-            const btnSalvar = document.getElementById('btn-salvar');
-            
-            let dataJson = null;
 
+            let dataJson = null;
+            let empresaSelecionada = null;
+
+            // Função para renderizar a lista de funcionários
             const renderizarFuncionarios = (funcionarios) => {
-                listaDiv.innerHTML = '';
+                listaDiv.innerHTML = ''; // Limpa a lista
                 if (funcionarios && funcionarios.length > 0) {
                     funcionarios.forEach(funcionario => {
-                        const itemDiv = document.createElement('div');
-                        itemDiv.classList.add('item-container');
-                        
                         const link = document.createElement('a');
-                        link.href = `pagina3.html?funcionario=${encodeURIComponent(funcionario.nome)}&empresa=${encodeURIComponent(empresaSelecionada)}`;
+                        link.href = `pagina3.html?empresaId=${encodeURIComponent(empresaId)}&funcionarioId=${encodeURIComponent(funcionario.id)}`;
                         link.classList.add('item');
                         link.textContent = funcionario.nome;
-
-                        const btnRemover = document.createElement('button');
-                        btnRemover.textContent = 'Remover';
-                        btnRemover.classList.add('botao-remover');
-                        btnRemover.onclick = () => {
-                            removerFuncionario(funcionario.nome);
-                        };
-
-                        itemDiv.appendChild(link);
-                        itemDiv.appendChild(btnRemover);
-                        listaDiv.appendChild(itemDiv);
+                        listaDiv.appendChild(link);
                     });
                 } else {
-                    listaDiv.innerHTML = '<p>Nenhum funcionário encontrado para esta empresa.</p>';
+                    feedbackDiv.textContent = 'Nenhum funcionário encontrado.';
                 }
             };
 
-            const removerFuncionario = (nomeFuncionario) => {
-                const empresa = dataJson.empresas.find(emp => emp.nome === empresaSelecionada);
-                if (empresa) {
-                    empresa.funcionarios = empresa.funcionarios.filter(f => f.nome !== nomeFuncionario);
-                    renderizarFuncionarios(empresa.funcionarios);
-                    feedbackDiv.textContent = 'Funcionário removido temporariamente. Clique em Salvar para aplicar a alteração.';
-                    feedbackDiv.style.color = '#ff8c00';
+            // Função para adicionar um novo funcionário
+            const adicionarFuncionario = async () => {
+                const novoFuncionarioNome = inputFuncionario.value.trim();
+                if (!novoFuncionarioNome) {
+                    feedbackDiv.textContent = 'O nome do funcionário não pode estar vazio.';
+                    feedbackDiv.style.color = 'red';
+                    return;
+                }
+
+                if (!empresaSelecionada) {
+                    feedbackDiv.textContent = 'Erro: Empresa não carregada.';
+                    feedbackDiv.style.color = 'red';
+                    return;
+                }
+                
+                // Verifica se o funcionário já existe
+                if (empresaSelecionada.funcionarios.some(f => f.nome.toLowerCase() === novoFuncionarioNome.toLowerCase())) {
+                    feedbackDiv.textContent = 'Funcionário com este nome já existe.';
+                    feedbackDiv.style.color = 'red';
+                    return;
+                }
+
+                // Cria o novo objeto funcionário
+                const novoFuncionario = {
+                    id: `func_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                    nome: novoFuncionarioNome,
+                    grupo_valor_r$: [],
+                    grupo_hora: [],
+                    grupo_dia: []
+                };
+                
+                empresaSelecionada.funcionarios.push(novoFuncionario);
+                
+                feedbackDiv.textContent = 'Adicionando funcionário...';
+                feedbackDiv.style.color = '#ff8c00';
+
+                try {
+                    const response = await fetch('/api/save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dataJson)
+                    });
+
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || 'Erro ao adicionar funcionário.');
+
+                    feedbackDiv.textContent = 'Funcionário adicionado com sucesso!';
+                    feedbackDiv.style.color = 'green';
+                    inputFuncionario.value = ''; // Limpa o input
+                    renderizarFuncionarios(empresaSelecionada.funcionarios); // Atualiza a lista
+                    
+                } catch (error) {
+                    feedbackDiv.textContent = 'Erro: ' + error.message;
+                    feedbackDiv.style.color = 'red';
+                    // Reverte a adição em caso de erro
+                    empresaSelecionada.funcionarios.pop();
                 }
             };
             
-            const adicionarFuncionario = () => {
-                const nomeFuncionario = inputFuncionario.value.trim();
-                if (nomeFuncionario) {
-                    const empresa = dataJson.empresas.find(emp => emp.nome === empresaSelecionada);
-                    if (empresa) {
-                        // Verifica se o funcionário já existe
-                        const existe = empresa.funcionarios.some(f => f.nome === nomeFuncionario);
-                        if (!existe) {
-                            const novoFuncionario = {
-                                "nome": nomeFuncionario,
-                                "grupo_valor_r$": ["comissao"],
-                                "grupo_hora": ["hora extra 50%"],
-                                "grupo_dia": ["deslocamento"]
-                            };
-                            empresa.funcionarios.push(novoFuncionario);
-                            renderizarFuncionarios(empresa.funcionarios);
-                            inputFuncionario.value = '';
-                            feedbackDiv.textContent = 'Novo funcionário adicionado temporariamente. Clique em Salvar para aplicar a alteração.';
-                            feedbackDiv.style.color = '#ff8c00';
-                        } else {
-                            feedbackDiv.textContent = 'Erro: Funcionário já existe.';
-                            feedbackDiv.style.color = 'red';
-                        }
-                    }
-                }
-            };
-
             btnAdicionar.addEventListener('click', adicionarFuncionario);
             inputFuncionario.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
@@ -114,45 +123,28 @@
                 }
             });
 
-            btnSalvar.addEventListener('click', async () => {
-                feedbackDiv.textContent = 'Salvando dados...';
-                feedbackDiv.style.color = '#ff8c00';
-                try {
-                    const response = await fetch('/api/save', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(dataJson)
-                    });
-                    const result = await response.json();
-                    if (!response.ok) throw new Error(result.message || 'Erro ao salvar.');
-                    feedbackDiv.textContent = 'Dados salvos com sucesso!';
-                    feedbackDiv.style.color = 'green';
-                } catch (error) {
-                    feedbackDiv.textContent = 'Erro ao salvar: ' + error.message;
-                    feedbackDiv.style.color = 'red';
-                }
-            });
-
-            // Carrega os dados da API ao iniciar
+            // Função para buscar e carregar os dados da empresa
             const carregarDados = async () => {
-                if (!empresaSelecionada) {
-                    alert('Empresa não selecionada.');
+                if (!empresaId) {
+                    feedbackDiv.textContent = 'ID da empresa não selecionado.';
+                    feedbackDiv.style.color = 'red';
                     window.location.href = 'index.html';
                     return;
                 }
-                tituloPagina.textContent = `Empregados da ${empresaSelecionada}`;
+                
                 loadingDiv.style.display = 'block';
-
+                feedbackDiv.textContent = '';
+                
                 try {
                     const response = await fetch('/api/data');
                     if (!response.ok) throw new Error('Erro ao carregar dados.');
                     
                     dataJson = await response.json();
-                    const empresa = dataJson.empresas.find(emp => emp.nome === empresaSelecionada);
-                    if (empresa) {
-                        renderizarFuncionarios(empresa.funcionarios);
+                    empresaSelecionada = dataJson.empresas.find(emp => emp.id === empresaId);
+                    
+                    if (empresaSelecionada) {
+                        tituloPagina.textContent = `Empregados da ${empresaSelecionada.nome}`;
+                        renderizarFuncionarios(empresaSelecionada.funcionarios);
                     } else {
                         feedbackDiv.textContent = 'Empresa não encontrada.';
                         feedbackDiv.style.color = 'red';

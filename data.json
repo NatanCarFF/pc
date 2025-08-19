@@ -1,9 +1,11 @@
 {
   "empresas": [
     {
+      "id": "empresa_1678886400000_2x5y3z",
       "nome": "WLAN TELECOM",
       "funcionarios": [
         {
+          "id": "func_1678886400001_a9b8c7",
           "nome": "Felipe Costa",
           "grupo_valor_r$": [
             "comissao",
@@ -20,6 +22,7 @@
           ]
         },
         {
+          "id": "func_1678886400002_d6e5f4",
           "nome": "Ana Laura Neves",
           "grupo_valor_r$": [
             "comissao",
@@ -36,6 +39,7 @@
           ]
         },
         {
+          "id": "func_1678886400003_g3h2i1",
           "nome": "Lucas Pereira",
           "grupo_valor_r$": [
             "ajuda de custo",
@@ -52,70 +56,9 @@
           ]
         },
         {
+          "id": "func_1678886400004_j0k9l8",
           "nome": "Carla Machado",
           "grupo_valor_r$": [
-            "gratificacao (fixo)",
-            "ajuda de custo",
-            "adiantamento salarial"
-          ],
-          "grupo_hora": [
-            "hora extra 50%",
-            "banco de horas"
-          ],
-          "grupo_dia": [
-            "deslocamento"
-          ]
-        },
-        {
-          "nome": "Eduardo Guedes",
-          "grupo_valor_r$": [
-            "comissao",
-            "acelerador",
-            "premios"
-          ],
-          "grupo_hora": [
-            "banco de horas"
-          ],
-          "grupo_dia": [
-            "plantao supervisor"
-          ]
-        },
-        {
-          "nome": "Patrícia Souza",
-          "grupo_valor_r$": [
-            "bonificacao",
-            "desconto autorizado"
-          ],
-          "grupo_hora": [
-            "hora extra 50%"
-          ],
-          "grupo_dia": [
-            "deslocamento"
-          ]
-        },
-        {
-          "nome": "Natanael Carvalho",
-          "grupo_valor_r$": [
-            "comissao"
-          ],
-          "grupo_hora": [
-            "hora extra 50%"
-          ],
-          "grupo_dia": [
-            "deslocamento"
-          ]
-        }
-      ]
-    },
-    {
-      "nome": "WLAN SISTEMAS",
-      "funcionarios": [
-        {
-          "nome": "Gustavo Lima",
-          "grupo_valor_r$": [
-            "comissao",
-            "bonificacao",
-            "acelerador",
             "gratificacao (fixo)",
             "ajuda de custo"
           ],
@@ -130,160 +73,7 @@
           ]
         },
         {
-          "nome": "Mariana Brito",
-          "grupo_valor_r$": [
-            "bonificacao",
-            "premios",
-            "desconto autorizado",
-            "auxilio moradia"
-          ],
-          "grupo_hora": [
-            "hora extra 50%"
-          ],
-          "grupo_dia": [
-            "deslocamento",
-            "sobreaviso"
-          ]
-        },
-        {
-          "nome": "Juliana Prado",
-          "grupo_valor_r$": [
-            "comissao",
-            "gratificacao (fixo)",
-            "aluguel de veiculo",
-            "adiantamento salarial"
-          ],
-          "grupo_hora": [
-            "banco de horas"
-          ],
-          "grupo_dia": [
-            "sobreaviso",
-            "plantao supervisor"
-          ]
-        },
-        {
-          "nome": "Thiago Martins",
-          "grupo_valor_r$": [
-            "acelerador",
-            "ajuda de custo",
-            "premios"
-          ],
-          "grupo_hora": [
-            "hora extra 50%",
-            "banco de horas"
-          ],
-          "grupo_dia": [
-            "deslocamento",
-            "plantao supervisor"
-          ]
-        }
-      ]
-    },
-    {
-      "nome": "MKTEL",
-      "funcionarios": [
-        {
-          "nome": "Fernanda Alves",
-          "grupo_valor_r$": [
-            "ajuda de custo",
-            "premios",
-            "desconto autorizado",
-            "auxilio moradia",
-            "aluguel de veiculo"
-          ],
-          "grupo_hora": [
-            "hora extra 50%",
-            "banco de horas"
-          ],
-          "grupo_dia": [
-            "deslocamento",
-            "sobreaviso"
-          ]
-        },
-        {
-          "nome": "Bruno Santos",
-          "grupo_valor_r$": [
-            "comissao",
-            "bonificacao",
-            "gratificacao (fixo)",
-            "adiantamento salarial"
-          ],
-          "grupo_hora": [
-            "hora extra 50%"
-          ],
-          "grupo_dia": [
-            "plantao supervisor"
-          ]
-        },
-        {
-          "nome": "Aline Ribeiro",
-          "grupo_valor_r$": [
-            "acelerador",
-            "ajuda de custo",
-            "premios",
-            "desconto autorizado"
-          ],
-          "grupo_hora": [
-            "banco de horas"
-          ],
-          "grupo_dia": [
-            "deslocamento",
-            "sobreaviso"
-          ]
-        },
-        {
-          "nome": "Márcio Cunha",
-          "grupo_valor_r$": [
-            "gratificacao (fixo)",
-            "aluguel de veiculo"
-          ],
-          "grupo_hora": [
-            "hora extra 50%",
-            "banco de horas"
-          ],
-          "grupo_dia": [
-            "sobreaviso"
-          ]
-        },
-        {
-          "nome": "Camila Gomes",
-          "grupo_valor_r$": [
-            "comissao",
-            "bonificacao",
-            "adiantamento salarial"
-          ],
-          "grupo_hora": [
-            "hora extra 50%"
-          ],
-          "grupo_dia": [
-            "deslocamento"
-          ]
-        }
-      ]
-    },
-    {
-      "nome": "AS AMPLITUDE",
-      "funcionarios": [
-        {
-          "nome": "Roberto Oliveira",
-          "grupo_valor_r$": [
-            "acelerador",
-            "gratificacao (fixo)",
-            "ajuda de custo",
-            "premios",
-            "desconto autorizado"
-          ],
-          "grupo_hora": [
-            "hora extra 50%",
-            "banco de horas"
-          ],
-          "grupo_dia": [
-            "deslocamento",
-            "sobreaviso",
-            "plantao supervisor"
-          ]
-        },
-        {
+          "id": "func_1678886400005_m7n6o5",
           "nome": "Giovanna Pereira",
           "grupo_valor_r$": [
             "comissao",
@@ -299,6 +89,7 @@
           ]
         },
         {
+          "id": "func_1678886400006_p4q3r2",
           "nome": "Thiago Martins",
           "grupo_valor_r$": [
             "ajuda de custo",
@@ -312,6 +103,7 @@
           ]
         },
         {
+          "id": "func_1678886400007_s1t0u9",
           "nome": "Carolina Dias",
           "grupo_valor_r$": [
             "gratificacao (fixo)",
@@ -327,12 +119,14 @@
           ]
         },
         {
+          "id": "func_1678886400008_v8w7x6",
           "nome": "Daniela Lima",
           "grupo_valor_r$": [
             "comissao",
             "bonificacao"
           ],
           "grupo_hora": [
+            "banco de horas",
             "hora extra 50%"
           ],
           "grupo_dia": [

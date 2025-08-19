@@ -39,44 +39,39 @@ h1 {
     color: #fff;
     padding: 15px;
     border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background-color 0.3s, transform 0.2s;
-    display: block;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-decoration: none; /* Adicionado para remover o sublinhado dos links */
+    display: block; /* Garante que os links ocupem a largura total */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .item:hover {
-    background: linear-gradient(135deg, #feb47b, #ff7e5f);
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-.botao-voltar {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 12px 25px;
-    background-color: #555;
+.botao-primario {
+    background: linear-gradient(45deg, #ff8c00, #ff4500);
     color: #fff;
-    text-decoration: none;
-    border-radius: 8px;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 25px;
+    cursor: pointer;
     font-weight: 600;
-    transition: background-color 0.3s;
+    font-size: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin: 5px;
 }
 
-.botao-voltar:hover {
-    background-color: #333;
-}
-
-.ferramentas {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-bottom: 25px;
+.botao-primario:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 140, 0, 0.3);
 }
 
 .botao-secundario {
-    background: #e0e0e0;
+    background-color: #f0f0f0;
     color: #333;
     border: none;
     border-radius: 10px;
@@ -85,6 +80,9 @@ h1 {
     font-weight: 600;
     font-size: 1rem;
     transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    margin: 5px;
 }
 
 .botao-secundario:hover {
@@ -93,11 +91,41 @@ h1 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.botao-voltar {
+    background: #555;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    text-decoration: none;
+    margin-top: 20px;
+    display: inline-block;
+}
+
+.botao-voltar:hover {
+    background: #333;
+}
+
+.ferramentas {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.ferramentas-func {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
 .mensagem {
     text-align: center;
     margin-bottom: 15px;
     font-weight: 600;
-    color: #ff8c00;
 }
 
 .item-container {
@@ -114,49 +142,46 @@ h1 {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
-#input-funcionario {
+#input-funcionario, #input-atividade {
     flex-grow: 1;
     padding: 10px;
     border-radius: 8px;
     border: 1px solid #ccc;
+    font-size: 1rem;
 }
 
 .botao-adicionar {
-    background: #ff8c00;
-    color: #fff;
+    background: #4CAF50;
+    color: white;
     border: none;
     border-radius: 8px;
-    padding: 12px 20px;
+    padding: 10px 15px;
     cursor: pointer;
     font-weight: 600;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: background 0.3s ease;
 }
 
 .botao-adicionar:hover {
-    background-color: #e67e00;
-    transform: scale(1.05);
+    background: #45a049;
 }
 
-.botao-remover {
-    background: #ff4d4d;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background-color 0.3s;
-}
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        max-width: 90%;
+    }
 
-.botao-remover:hover {
-    background: #e60000;
-}
+    .ferramentas, .ferramentas-func, .form-adicionar {
+        flex-direction: column;
+        align-items: stretch;
+    }
 
-.ferramentas-func {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 25px;
+    .botao-primario, .botao-secundario, .botao-voltar {
+        width: 100%;
+        box-sizing: border-box;
+    }
 }

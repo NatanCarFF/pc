@@ -36,21 +36,26 @@
             // Função para buscar e renderizar a lista de empresas
             const fetchAndRenderCompanies = async () => {
                 loadingDiv.style.display = 'block';
-                listaDiv.innerHTML = '';
+                feedbackDiv.textContent = '';
                 try {
                     const response = await fetch('/api/data');
-                    if (!response.ok) throw new Error('Erro ao carregar os dados.');
+                    if (!response.ok) throw new Error('Erro ao carregar dados.');
                     
                     const data = await response.json();
-                    const empresas = data.empresas.map(emp => emp.nome);
-                    
-                    empresas.forEach(empresa => {
-                        const link = document.createElement('a');
-                        link.href = `pagina2.html?empresa=${encodeURIComponent(empresa)}`;
-                        link.classList.add('item');
-                        link.textContent = empresa;
-                        listaDiv.appendChild(link);
-                    });
+                    listaDiv.innerHTML = ''; // Limpa a lista existente
+
+                    if (data.empresas && data.empresas.length > 0) {
+                        data.empresas.forEach(empresa => {
+                            const link = document.createElement('a');
+                            link.href = `pagina2.html?empresaId=${encodeURIComponent(empresa.id)}`;
+                            link.classList.add('item');
+                            link.textContent = empresa.nome;
+                            listaDiv.appendChild(link);
+                        });
+                    } else {
+                        feedbackDiv.textContent = 'Nenhuma empresa encontrada.';
+                    }
+
                 } catch (error) {
                     feedbackDiv.textContent = 'Erro: ' + error.message;
                     feedbackDiv.style.color = 'red';
@@ -59,7 +64,7 @@
                 }
             };
 
-            // Evento para baixar o arquivo JSON
+            // Evento para o botão de download
             btnDownload.addEventListener('click', () => {
                 window.location.href = '/api/download';
             });
