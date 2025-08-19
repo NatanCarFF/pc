@@ -11,8 +11,14 @@ const DATA_FILE = path.join(__dirname, 'data.json');
 // Middleware para processar JSON no corpo das requisições
 app.use(bodyParser.json());
 
-// Serve os arquivos estáticos da pasta atual onde o server.js está localizado
-app.use(express.static(__dirname));
+// Rota adicionada para resolver o "Cannot GET /"
+// Redireciona a requisição da URL raiz para o arquivo index.html dentro da pasta 'public'
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Serve os arquivos estáticos da pasta 'public'
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Configuração do Multer para upload de arquivos JSON
 const upload = multer({ dest: 'uploads/' });
@@ -50,7 +56,6 @@ app.post('/api/addAtividade', async (req, res) => {
     try {
         const { funcionarioId, grupo, novaAtividade } = req.body;
 
-        // Validação de dados de entrada
         if (!funcionarioId || !grupo || !novaAtividade) {
             return res.status(400).json({ message: 'Dados inválidos. Por favor, forneça o ID do funcionário, o grupo e a nova atividade.' });
         }
@@ -58,7 +63,6 @@ app.post('/api/addAtividade', async (req, res) => {
         const data = await fs.readFile(DATA_FILE, 'utf8');
         const jsonData = JSON.parse(data);
 
-        // Otimização: buscar o funcionário por ID
         let funcionarioEncontrado = null;
         for (const empresa of jsonData.empresas) {
             funcionarioEncontrado = empresa.funcionarios.find(f => f.id === funcionarioId);
@@ -72,7 +76,6 @@ app.post('/api/addAtividade', async (req, res) => {
             else if (grupo === 'Grupo por Dia') grupoChave = 'grupo_dia';
 
             if (grupoChave && funcionarioEncontrado[grupoChave]) {
-                // Previne duplicatas
                 if (!funcionarioEncontrado[grupoChave].includes(novaAtividade)) {
                     funcionarioEncontrado[grupoChave].push(novaAtividade);
                     await fs.writeFile(DATA_FILE, JSON.stringify(jsonData, null, 2), 'utf8');
@@ -114,20 +117,17 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
         const fileContent = await fs.readFile(uploadedFilePath, 'utf8');
         const parsedData = JSON.parse(fileContent);
 
-        // Validação básica do formato do JSON
         if (!parsedData.empresas || !Array.isArray(parsedData.empresas)) {
             await fs.unlink(uploadedFilePath);
             return res.status(400).json({ message: 'Formato de arquivo inválido. O JSON deve conter um array de "empresas".' });
         }
 
-        // Salvar o novo JSON
         await fs.rename(uploadedFilePath, DATA_FILE);
         res.status(200).json({ message: 'Dados atualizados com sucesso.' });
 
     } catch (error) {
         console.error('Erro ao processar o arquivo de upload:', error);
         res.status(500).json({ message: 'Erro no processamento do arquivo.' });
-        // Tentar remover o arquivo temporário em caso de erro
         await fs.unlink(uploadedFilePath).catch(err => console.error("Erro ao remover o arquivo temporário:", err));
     }
 });
