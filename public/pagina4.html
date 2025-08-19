@@ -76,13 +76,13 @@
                 feedbackDiv.style.color = '#ff8c00';
 
                 try {
+                    // Fetch para a API que salva a nova atividade no servidor
                     const response = await fetch('/api/add-atividade', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            empresa: empresaSelecionada,
                             funcionario: funcionarioNome,
                             grupo: grupoNome,
                             novaAtividade: novaAtividade

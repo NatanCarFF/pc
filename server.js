@@ -35,8 +35,8 @@ app.post('/api/save', async (req, res) => {
         await fs.writeFile(DATA_FILE, JSON.stringify(newData, null, 2), 'utf8');
         res.status(200).json({ message: 'Dados salvos com sucesso!' });
     } catch (error) {
-        console.error('Erro ao salvar o arquivo de dados:', error);
-        res.status(500).json({ message: 'Erro ao salvar os dados.' });
+    console.error('Erro ao salvar o arquivo de dados:', error);
+    res.status(500).json({ message: 'Erro ao salvar os dados.' });
     }
 });
 
