@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selecionar Empregado</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="titulo-pagina"></h1>
+        
+        <div class="ferramentas-func">
+            <button id="btn-salvar" class="botao-adicionar">Salvar Alterações</button>
+            <div class="form-adicionar">
+                <input type="text" id="input-funcionario" placeholder="Nome do novo funcionário">
+                <button id="btn-adicionar" class="botao-adicionar">Adicionar</button>
+            </div>
+        </div>
+
+        <div id="loading" class="mensagem">Carregando empregados...</div>
+        <div id="feedback" class="mensagem"></div>
+
+        <div id="empregados-lista" class="lista">
+            </div>
+
+        <a href="index.html" class="botao-voltar">Voltar para Empresas</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const empresaSelecionada = params.get('empresa');
+            
+            const listaDiv = document.getElementById('empregados-lista');
+            const tituloPagina = document.getElementById('titulo-pagina');
+            const loadingDiv = document.getElementById('loading');
+            const feedbackDiv = document.getElementById('feedback');
+            const btnAdicionar = document.getElementById('btn-adicionar');
+            const inputFuncionario = document.getElementById('input-funcionario');
+            const btnSalvar = document.getElementById('btn-salvar');
+            
+            let dataJson = null;
+
+            const renderizarFuncionarios = (funcionarios) => {
+                listaDiv.innerHTML = '';
+                if (funcionarios && funcionarios.length > 0) {
+                    funcionarios.forEach(funcionario => {
+                        const itemDiv = document.createElement('div');
+                        itemDiv.classList.add('item-container');
+                        
+                        const link = document.createElement('a');
+                        link.href = `pagina3.html?funcionario=${encodeURIComponent(funcionario.nome)}&empresa=${encodeURIComponent(empresaSelecionada)}`;
+                        link.classList.add('item');
+                        link.textContent = funcionario.nome;
+
+                        const btnRemover = document.createElement('button');
+                        btnRemover.textContent = 'Remover';
+                        btnRemover.classList.add('botao-remover');
+                        btnRemover.onclick = () => {
+                            removerFuncionario(funcionario.nome);
+                        };
+
+                        itemDiv.appendChild(link);
+                        itemDiv.appendChild(btnRemover);
+                        listaDiv.appendChild(itemDiv);
+                    });
+                } else {
+                    listaDiv.innerHTML = '<p>Nenhum funcionário encontrado para esta empresa.</p>';
+                }
+            };
+
+            const removerFuncionario = (nomeFuncionario) => {
+                const empresa = dataJson.empresas.find(emp => emp.nome === empresaSelecionada);
+                if (empresa) {
+                    empresa.funcionarios = empresa.funcionarios.filter(f => f.nome !== nomeFuncionario);
+                    renderizarFuncionarios(empresa.funcionarios);
+                    feedbackDiv.textContent = 'Funcionário removido temporariamente. Clique em Salvar para aplicar a alteração.';
+                    feedbackDiv.style.color = '#ff8c00';
+                }
+            };
+            
+            const adicionarFuncionario = () => {
+                const nomeFuncionario = inputFuncionario.value.trim();
+                if (nomeFuncionario) {
+                    const empresa = dataJson.empresas.find(emp => emp.nome === empresaSelecionada);
+                    if (empresa) {
+                        // Verifica se o funcionário já existe
+                        const existe = empresa.funcionarios.some(f => f.nome === nomeFuncionario);
+                        if (!existe) {
+                            const novoFuncionario = {
+                                "nome": nomeFuncionario,
+                                "grupo_valor_r$": ["comissao"],
+                                "grupo_hora": ["hora extra 50%"],
+                                "grupo_dia": ["deslocamento"]
+                            };
+                            empresa.funcionarios.push(novoFuncionario);
+                            renderizarFuncionarios(empresa.funcionarios);
+                            inputFuncionario.value = '';
+                            feedbackDiv.textContent = 'Novo funcionário adicionado temporariamente. Clique em Salvar para aplicar a alteração.';
+                            feedbackDiv.style.color = '#ff8c00';
+                        } else {
+                            feedbackDiv.textContent = 'Erro: Funcionário já existe.';
+                            feedbackDiv.style.color = 'red';
+                        }
+                    }
+                }
+            };
+
+            btnAdicionar.addEventListener('click', adicionarFuncionario);
+            inputFuncionario.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    adicionarFuncionario();
+                }
+            });
+
+            btnSalvar.addEventListener('click', async () => {
+                feedbackDiv.textContent = 'Salvando dados...';
+                feedbackDiv.style.color = '#ff8c00';
+                try {
+                    const response = await fetch('/api/save', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(dataJson)
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || 'Erro ao salvar.');
+                    feedbackDiv.textContent = 'Dados salvos com sucesso!';
+                    feedbackDiv.style.color = 'green';
+                } catch (error) {
+                    feedbackDiv.textContent = 'Erro ao salvar: ' + error.message;
+                    feedbackDiv.style.color = 'red';
+                }
+            });
+
+            // Carrega os dados da API ao iniciar
+            const carregarDados = async () => {
+                if (!empresaSelecionada) {
+                    alert('Empresa não selecionada.');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                tituloPagina.textContent = `Empregados da ${empresaSelecionada}`;
+                loadingDiv.style.display = 'block';
+
+                try {
+                    const response = await fetch('/api/data');
+                    if (!response.ok) throw new Error('Erro ao carregar dados.');
+                    
+                    dataJson = await response.json();
+                    const empresa = dataJson.empresas.find(emp => emp.nome === empresaSelecionada);
+                    if (empresa) {
+                        renderizarFuncionarios(empresa.funcionarios);
+                    } else {
+                        feedbackDiv.textContent = 'Empresa não encontrada.';
+                        feedbackDiv.style.color = 'red';
+                    }
+                } catch (error) {
+                    feedbackDiv.textContent = 'Erro: ' + error.message;
+                    feedbackDiv.style.color = 'red';
+                } finally {
+                    loadingDiv.style.display = 'none';
+                }
+            };
+
+            carregarDados();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selecionar Grupo de Eventos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="titulo-pagina"></h1>
+        
+        <div id="loading" class="mensagem">Carregando grupos de eventos...</div>
+        <div id="feedback" class="mensagem"></div>
+
+        <div id="grupos-lista" class="lista">
+            </div>
+
+        <a href="#" onclick="history.back();" class="botao-voltar">Voltar para Empregados</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const funcionarioSelecionado = params.get('funcionario');
+            const empresaSelecionada = params.get('empresa');
+
+            const tituloPagina = document.getElementById('titulo-pagina');
+            const gruposLista = document.getElementById('grupos-lista');
+            const loadingDiv = document.getElementById('loading');
+            const feedbackDiv = document.getElementById('feedback');
+            
+            tituloPagina.textContent = `Grupos de Eventos de ${funcionarioSelecionado}`;
+
+            // Função para carregar os dados do funcionário da API
+            const carregarDadosFuncionario = async () => {
+                loadingDiv.style.display = 'block';
+
+                try {
+                    const response = await fetch('/api/data');
+                    if (!response.ok) throw new Error('Erro ao carregar dados.');
+                    
+                    const dataJson = await response.json();
+                    
+                    const empresa = dataJson.empresas.find(emp => emp.nome === empresaSelecionada);
+                    if (!empresa) {
+                        feedbackDiv.textContent = 'Empresa não encontrada.';
+                        return;
+                    }
+                    
+                    const funcionario = empresa.funcionarios.find(func => func.nome === funcionarioSelecionado);
+                    if (!funcionario) {
+                        feedbackDiv.textContent = 'Funcionário não encontrado.';
+                        return;
+                    }
+
+                    // Prepara e exibe os links para os grupos de eventos
+                    const grupos = {
+                        'Grupo por Valor (R$)': funcionario.grupo_valor_r$,
+                        'Grupo por Hora': funcionario.grupo_hora,
+                        'Grupo por Dia': funcionario.grupo_dia
+                    };
+
+                    for (const [titulo, eventos] of Object.entries(grupos)) {
+                        const link = document.createElement('a');
+                        link.href = `pagina4.html?funcionario=${encodeURIComponent(funcionario.nome)}&grupo=${encodeURIComponent(titulo)}&eventos=${encodeURIComponent(eventos.join(','))}`;
+                        link.classList.add('item');
+                        link.textContent = titulo;
+                        gruposLista.appendChild(link);
+                    }
+
+                } catch (error) {
+                    feedbackDiv.textContent = 'Erro: ' + error.message;
+                    feedbackDiv.style.color = 'red';
+                } finally {
+                    loadingDiv.style.display = 'none';
+                }
+            };
+            
+            if (funcionarioSelecionado && empresaSelecionada) {
+                carregarDadosFuncionario();
+            } else {
+                alert('Dados insuficientes para exibir a página.');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

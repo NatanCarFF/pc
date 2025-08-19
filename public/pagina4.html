@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Evento</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="titulo-pagina"></h1>
+        
+        <div id="loading" class="mensagem">Carregando detalhes...</div>
+        <div id="feedback" class="mensagem"></div>
+
+        <div id="evento-detalhes" class="item">
+            </div>
+
+        <button class="botao-adicionar">Adicionar Atividade</button>
+
+        <a href="#" onclick="history.back();" class="botao-voltar">Voltar para Grupos</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const funcionarioNome = params.get('funcionario');
+            const grupoNome = params.get('grupo');
+            const eventosStr = params.get('eventos');
+
+            const tituloPagina = document.getElementById('titulo-pagina');
+            const eventoDetalhesDiv = document.getElementById('evento-detalhes');
+            const loadingDiv = document.getElementById('loading');
+            const feedbackDiv = document.getElementById('feedback');
+            
+            tituloPagina.textContent = funcionarioNome;
+
+            if (funcionarioNome && grupoNome && eventosStr) {
+                const eventos = eventosStr.split(',');
+                
+                // Exibe os detalhes do evento selecionado (escolhe o primeiro da lista como exemplo)
+                const evento = eventos[0];
+                
+                // A função que define o valor padrão do evento
+                const obterValorExemplo = (grupo) => {
+                    if (grupo === 'Grupo por Valor (R$)') {
+                        return 'R$ 60,00';
+                    } else if (grupo === 'Grupo por Hora') {
+                        return '60 horas';
+                    } else if (grupo === 'Grupo por Dia') {
+                        return '60 dias';
+                    }
+                    return 'valor não especificado';
+                };
+
+                eventoDetalhesDiv.innerHTML = `
+                    <p class="info-evento"><strong>${evento}</strong>: ${obterValorExemplo(grupoNome)}</p>
+                `;
+                
+            } else {
+                feedbackDiv.textContent = 'Dados insuficientes para exibir a página.';
+                feedbackDiv.style.color = 'red';
+                loadingDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

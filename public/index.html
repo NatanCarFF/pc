@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selecionar Empresas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Selecionar Empresas</h1>
+        
+        <div class="ferramentas">
+            <button id="btn-download" class="botao-secundario">Baixar Dados</button>
+            <label for="upload-file" class="botao-secundario">
+                Enviar Dados
+                <input type="file" id="upload-file" accept=".json" style="display:none;">
+            </label>
+        </div>
+
+        <div id="loading" class="mensagem">Carregando empresas...</div>
+        <div id="feedback" class="mensagem"></div>
+
+        <div id="empresas-lista" class="lista">
+            </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const listaDiv = document.getElementById('empresas-lista');
+            const loadingDiv = document.getElementById('loading');
+            const feedbackDiv = document.getElementById('feedback');
+            const btnDownload = document.getElementById('btn-download');
+            const uploadInput = document.getElementById('upload-file');
+
+            // Função para buscar e renderizar a lista de empresas
+            const fetchAndRenderCompanies = async () => {
+                loadingDiv.style.display = 'block';
+                listaDiv.innerHTML = '';
+                try {
+                    const response = await fetch('/api/data');
+                    if (!response.ok) throw new Error('Erro ao carregar os dados.');
+                    
+                    const data = await response.json();
+                    const empresas = data.empresas.map(emp => emp.nome);
+                    
+                    empresas.forEach(empresa => {
+                        const link = document.createElement('a');
+                        link.href = `pagina2.html?empresa=${encodeURIComponent(empresa)}`;
+                        link.classList.add('item');
+                        link.textContent = empresa;
+                        listaDiv.appendChild(link);
+                    });
+                } catch (error) {
+                    feedbackDiv.textContent = 'Erro: ' + error.message;
+                    feedbackDiv.style.color = 'red';
+                } finally {
+                    loadingDiv.style.display = 'none';
+                }
+            };
+
+            // Evento para baixar o arquivo JSON
+            btnDownload.addEventListener('click', () => {
+                window.location.href = '/api/download';
+            });
+
+            // Evento para fazer upload de um novo arquivo JSON
+            uploadInput.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                feedbackDiv.textContent = 'Enviando arquivo...';
+                feedbackDiv.style.color = '#ff8c00';
+
+                try {
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message || 'Erro no upload.');
+
+                    feedbackDiv.textContent = 'Dados atualizados com sucesso!';
+                    feedbackDiv.style.color = 'green';
+                    setTimeout(() => {
+                        window.location.reload(); // Recarrega a página para mostrar os novos dados
+                    }, 1500);
+                } catch (error) {
+                    feedbackDiv.textContent = 'Erro: ' + error.message;
+                    feedbackDiv.style.color = 'red';
+                }
+            });
+
+            fetchAndRenderCompanies();
+        });
+    </script>
+</body>
+</html>
